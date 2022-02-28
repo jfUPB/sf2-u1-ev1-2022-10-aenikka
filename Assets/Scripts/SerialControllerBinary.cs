@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Ardity (Serial Communication for Arduino + Unity)
  * Author: Daniel Wilches <dwilches@gmail.com>
  *
