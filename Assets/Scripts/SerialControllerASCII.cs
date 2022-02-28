@@ -1,4 +1,4 @@
-﻿/**
+**
  * Ardity (Serial Communication for Arduino + Unity)
  * Author: Daniel Wilches <dwilches@gmail.com>
  *
@@ -6,8 +6,6 @@
  * https://creativecommons.org/licenses/by/2.0/
  */
 
-using System.Collections.Generic;
-using System.IO.Ports;
 using UnityEngine;
 using System.Threading;
 
@@ -25,7 +23,7 @@ using System.Threading;
  * on the integrity of the message. It's up to the one that makes sense of the
  * data.
  */
-public class SerialControllerCustom : MonoBehaviour
+public class SerialController : MonoBehaviour
 {
     [Tooltip("Port name with which the SerialPort object will be created.")]
     public string portName = "COM3";
@@ -60,7 +58,7 @@ public class SerialControllerCustom : MonoBehaviour
 
     // Internal reference to the Thread and the object that runs in it.
     protected Thread thread;
-    protected SerialThreadASCII serialThread;
+    protected SerialThreadLines serialThread;
 
 
     // ------------------------------------------------------------------------
@@ -68,19 +66,22 @@ public class SerialControllerCustom : MonoBehaviour
     // It creates a new thread that tries to connect to the serial device
     // and start reading from it.
     // ------------------------------------------------------------------------
-
-    public void OpenPort()
+    void OnEnable()
     {
-        serialThread = new SerialThreadASCII(portName,
-            baudRate,
-            reconnectionDelay,
-            maxUnreadMessages,
-            dropOldMessage);
+        serialThread = new SerialThreadLines(portName,
+                                             baudRate,
+                                             reconnectionDelay,
+                                             maxUnreadMessages,
+                                             dropOldMessage);
         thread = new Thread(new ThreadStart(serialThread.RunForever));
         thread.Start();
     }
 
-    public void ClosePort()
+    // ------------------------------------------------------------------------
+    // Invoked whenever the SerialController gameobject is deactivated.
+    // It stops and destroys the thread that was reading from the serial device.
+    // ------------------------------------------------------------------------
+    void OnDisable()
     {
         // If there is a user-defined tear-down function, execute it before
         // closing the underlying COM port.
@@ -102,22 +103,6 @@ public class SerialControllerCustom : MonoBehaviour
             thread.Join();
             thread = null;
         }
-    }
-
-    public string[]  SerialPortsAvailable()
-    {
-        string[] ports = SerialPort.GetPortNames();
-        return ports;
-    }
-    
-
-    // ------------------------------------------------------------------------
-    // Invoked whenever the SerialController gameobject is deactivated.
-    // It stops and destroys the thread that was reading from the serial device.
-    // ------------------------------------------------------------------------
-    void OnDisable()
-    {
-        ClosePort();
     }
 
     // ------------------------------------------------------------------------
