@@ -19,9 +19,9 @@ using System.IO.Ports;
  * 
  * For method comments, refer to the base class.
  */
-public class SerialThreadASCII : AbstractSerialThread
+public class SerialThreadLines : AbstractSerialThread
 {
-    public SerialThreadASCI(string portName,
+    public SerialThreadLines(string portName,
                              int baudRate,
                              int delayBeforeReconnecting,
                              int maxUnreadMessages,
@@ -32,11 +32,11 @@ public class SerialThreadASCII : AbstractSerialThread
 
     protected override void SendToWire(object message, SerialPort serialPort)
     {
-        // Coloca aquí tu código
+        serialPort.WriteLine((string) message);
     }
 
     protected override object ReadFromWire(SerialPort serialPort)
     {
-        // Coloca aquí tu código
+        return serialPort.ReadLine();
     }
 }
